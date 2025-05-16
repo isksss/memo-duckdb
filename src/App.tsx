@@ -1,35 +1,127 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+interface Memo {
+	id: number;
+	title: string;
+	content: string;
 }
 
-export default App
+function App() {
+	const [memos, setMemos] = useState<Memo[]>([]);
+	const [selectedMemoId, setSelectedMemoId] = useState<number | null>(null);
+
+	const selectedMemo = memos.find((m) => m.id === selectedMemoId);
+
+	const handleNew = () => {
+		const newMemo: Memo = {
+			id: Date.now(),
+			title: "Untitled",
+			content: "",
+		};
+		setMemos((prev) => [...prev, newMemo]);
+		setSelectedMemoId(newMemo.id);
+	};
+
+	const handleTitleChange = (title: string) => {
+		setMemos((prev) =>
+			prev.map((m) => (m.id === selectedMemoId ? { ...m, title } : m)),
+		);
+	};
+
+	const handleContentChange = (content: string) => {
+		setMemos((prev) =>
+			prev.map((m) => (m.id === selectedMemoId ? { ...m, content } : m)),
+		);
+	};
+
+	const handleDelete = () => {
+		if (selectedMemoId === null) return;
+
+		setMemos((prev) => {
+			const newMemos = prev.filter((m) => m.id !== selectedMemoId);
+
+			// Pick next memo to select
+			if (newMemos.length > 0) {
+				setSelectedMemoId(newMemos[0].id);
+			} else {
+				setSelectedMemoId(null);
+			}
+
+			return newMemos;
+		});
+	};
+
+	return (
+		<div className="min-h-screen bg-gray-100 text-gray-800">
+			<header className="bg-white shadow-md px-6 py-4 flex justify-between items-center">
+				<h1 className="text-3xl font-bold">📝 Memo</h1>
+				<div className="flex space-x-3">
+					<button
+						onClick={handleNew}
+						className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md"
+					>
+						New
+					</button>
+					<button className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md">
+						Save
+					</button>
+					<button
+						onClick={handleDelete}
+						className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md"
+					>
+						Delete
+					</button>
+				</div>
+			</header>
+
+			<main className="flex h-[calc(100vh-80px)]">
+				{/* Sidebar */}
+				<aside className="w-1/4 bg-white border-r border-gray-200 p-4 overflow-y-auto">
+					<ul className="space-y-2">
+						{memos.map((memo) => (
+							<li
+								key={memo.id}
+								onClick={() => setSelectedMemoId(memo.id)}
+								className={`p-3 rounded-md cursor-pointer ${
+									memo.id === selectedMemoId
+										? "bg-blue-100"
+										: "bg-gray-100 hover:bg-gray-200"
+								}`}
+							>
+								{memo.title || "Untitled"}
+							</li>
+						))}
+					</ul>
+				</aside>
+
+				{/* Main editor */}
+				<section className="flex-1 p-6">
+					{selectedMemo ? (
+						<div className="space-y-4">
+							<input
+								type="text"
+								value={selectedMemo.title}
+								onChange={(e) => handleTitleChange(e.target.value)}
+								className="w-full text-2xl font-semibold border-b-2 border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent pb-2"
+								placeholder="Memo Title"
+							/>
+
+							<textarea
+								value={selectedMemo.content}
+								onChange={(e) => handleContentChange(e.target.value)}
+								className="w-full h-[400px] resize-none p-4 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+								placeholder="Write your memo here..."
+							/>
+						</div>
+					) : (
+						<p className="text-gray-500 text-lg">
+							Select or create a memo to begin.
+						</p>
+					)}
+				</section>
+			</main>
+		</div>
+	);
+}
+
+export default App;
