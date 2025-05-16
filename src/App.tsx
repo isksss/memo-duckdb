@@ -127,24 +127,24 @@ function App() {
 					</div>
 				</aside>
 
-				<section className="flex-1 p-6 overflow-y-auto">
+				<section className="flex-1 p-6 flex flex-col overflow-y-auto">
 					{selectedMemo ? (
-						<div className="space-y-4">
+						<>
 							<input
 								type="text"
 								value={selectedMemo.title}
 								onChange={(e) => handleTitleChange(e.target.value)}
-								className="w-full text-2xl font-semibold border-b-2 border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent pb-2"
+								className="w-full text-2xl font-semibold border-b-2 border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent pb-2 mb-4"
 								placeholder="Memo Title"
 							/>
 
 							<textarea
 								value={selectedMemo.content}
 								onChange={(e) => handleContentChange(e.target.value)}
-								className="w-full h-[400px] resize-none p-4 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+								className="w-full flex-1 resize-none p-4 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
 								placeholder="Write your memo here..."
 							/>
-						</div>
+						</>
 					) : (
 						<p className="text-gray-500 text-lg">
 							Select or create a memo to begin.
