@@ -11,7 +11,6 @@ function App() {
 	const [selectedMemoId, setSelectedMemoId] = useState<number | null>(null);
 	const [saveMessage, setSaveMessage] = useState<string | null>(null);
 
-	// Load memos from localStorage on mount
 	useEffect(() => {
 		const saved = localStorage.getItem("memos");
 		if (saved) {
@@ -61,16 +60,15 @@ function App() {
 		});
 	};
 
-	// Save memos to localStorage
 	const handleSave = () => {
 		localStorage.setItem("memos", JSON.stringify(memos));
 		setSaveMessage("Saved!");
-		setTimeout(() => setSaveMessage(null), 2000); // Message disappears after 2s
+		setTimeout(() => setSaveMessage(null), 2000);
 	};
 
 	return (
-		<div className="min-h-screen bg-gray-100 text-gray-800">
-			<header className="bg-white shadow-md px-6 py-4 flex justify-between items-center">
+		<div className="min-h-screen bg-gray-100 text-gray-800 flex flex-col">
+			<header className="bg-white shadow-md px-6 py-4 flex justify-between items-center flex-shrink-0">
 				<h1 className="text-3xl font-bold">📝 Memo</h1>
 				<div className="flex flex-col items-end space-y-1">
 					<div className="flex space-x-3">
@@ -96,7 +94,6 @@ function App() {
 							Delete
 						</button>
 					</div>
-					{/* Static reserved space */}
 					<div className="h-5">
 						{saveMessage && (
 							<span className="text-sm text-green-600 font-medium">
@@ -107,12 +104,15 @@ function App() {
 				</div>
 			</header>
 
-			<main className="flex h-[calc(100vh-80px)]">
-				{/* Sidebar */}
-				<aside className="w-1/4 bg-white border-r border-gray-200 p-4 overflow-y-auto">
-					<ul className="space-y-2">
+			<main
+				className="flex flex-1 overflow-hidden"
+				style={{ height: "calc(100vh - 80px)" }} // header高さ80pxを引く
+			>
+				<aside className="w-1/4 bg-white border-r border-gray-200 flex flex-col">
+					{/* ここがスクロール領域 */}
+					<div className="flex-1 overflow-y-auto p-4 space-y-2">
 						{memos.map((memo) => (
-							<li
+							<div
 								key={memo.id}
 								onClick={() => setSelectedMemoId(memo.id)}
 								className={`p-3 rounded-md cursor-pointer ${
@@ -122,13 +122,12 @@ function App() {
 								}`}
 							>
 								{memo.title || "Untitled"}
-							</li>
+							</div>
 						))}
-					</ul>
+					</div>
 				</aside>
 
-				{/* Main editor */}
-				<section className="flex-1 p-6">
+				<section className="flex-1 p-6 overflow-y-auto">
 					{selectedMemo ? (
 						<div className="space-y-4">
 							<input
